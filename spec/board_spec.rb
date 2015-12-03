@@ -35,12 +35,4 @@ describe Board do
       EOS
     end
   end
-
-  describe "#person_location" do
-    it "returns the coordinate location of the person" do
-      board = Board.new(level: 1)
-
-      expect(board.person_location).to eq(board.to_s.index("@"))
-    end
-  end
 end
