@@ -37,18 +37,18 @@ describe Board do
   end
 
   describe "#level_completed" do
-    it "responds true if level has no crates" do
+    it "responds true if level has no unstored crates" do
       board = <<-EOS
       ###
       #@#
-      ###
+      #*#
       EOS
       stub_level(board)
       board = Board.new(level: 1)
       expect(board.level_completed?).to eq(true)
     end
 
-    it "responds false if level has crates" do
+    it "responds false if level has unstored crates" do
       board = <<-EOS
       ###
       #o#
