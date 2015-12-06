@@ -7,7 +7,7 @@ class Person
   end
 
   def location
-    board.to_s.index("@")
+    board.to_s.index("@") || board.to_s.index("+")
   end
 
   def move(direction)
