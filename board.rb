@@ -28,17 +28,16 @@ class Board
   end
 
   def update(index)
-    person = find_person
-    new_location = person + index
+    new_location = person_location + index
     if available?(new_location)
-      move_person(person, index)
-    elsif has_crate?(new_location) && available?(new_location + index)
-      move_person(person, index)
+      move_person(index)
+    elsif crate?(new_location) && available?(new_location + index)
+      move_person(index)
       move_crate(index)
     end
   end
 
-  def find_person
+  def person_location
     cells.index(PERSON) || cells.index(PERSON_ON_STORAGE)
   end
 
@@ -54,36 +53,42 @@ class Board
     cells[cell] == OPEN || cells[cell] == STORAGE
   end
 
-  def has_crate?(cell)
+  def crate?(cell)
     cells[cell] == CRATE || cells[cell] == CRATE_ON_STORAGE
   end
 
-  def move_person(person, index)
-    update_previous_location(person)
-    move_to_new_location(person, index)
+  def move_person(index)
+    current_location = person_location
+    update_current_location
+    move_to_new_location(current_location, index)
   end
 
   def move_crate(index)
-    if cells[find_person + index] == OPEN
-      cells[find_person + index] = CRATE
+    if cells[person_location + index] == OPEN
+      cells[person_location + index] = CRATE
     else
-      cells[find_person + index] = CRATE_ON_STORAGE
+      cells[person_location + index] = CRATE_ON_STORAGE
     end
   end
 
-  def update_previous_location(person)
-    if cells[person] == PERSON_ON_STORAGE
-      cells[person] = STORAGE
+  def update_current_location
+    if cells[person_location] == PERSON_ON_STORAGE
+      cells[person_location] = STORAGE
     else
-      cells[person] = OPEN
+      cells[person_location] = OPEN
     end
   end
 
-  def move_to_new_location(person, index)
-    if cells[person + index] == STORAGE || cells[person + index] == CRATE_ON_STORAGE
-      cells[person + index] = PERSON_ON_STORAGE
+  def storage?(cell)
+    cells[cell] == STORAGE || cells[cell] == CRATE_ON_STORAGE
+  end
+
+  def move_to_new_location(current_location, index)
+    cell = current_location + index
+    if storage?(cell)
+      cells[cell] = PERSON_ON_STORAGE
     else
-      cells[person + index] = PERSON
+      cells[cell] = PERSON
     end
   end
 end
