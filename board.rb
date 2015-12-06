@@ -1,61 +1,47 @@
 class Board
   attr_reader :person, :level
 
-  PERSON  = "@"
-  CRATE   = "o"
-  WALL    = "#"
-  OPEN    = " "
-  STORAGE = "."
-  PERSON_ON_STORAGE = "+"
-  CRATE_ON_STORAGE  = "*"
-
   def initialize(level:)
     @level = level
     @person = Person.new(self)
-    make_board
+    create_board
   end
 
-  def make_board
+  def create_board
     lines = File.readlines("sokoban_levels.txt")
     levels = lines.map { |line| line.chomp.ljust(19) }.join("\n")
     levels = levels.split(/\n {19}\n/)
 
-    @cells = levels[level - 1]
+    @cells = levels[level - 1].chars.map { |char| Cell.new(self, char) }
   end
 
   def to_s
-    cells
+    board_cells = cells.map(&:occupant)
+    board_cells.join
+  end
+
+  def cell_at(index)
+    cells[index]
   end
 
   def update(index)
-    new_location = person.location + index
-    if available?(new_location)
+    new_location = cell_at(person.location + index)
+    new_crate_location = cell_at(person.location + (index * 2))
+    if new_location.available?
       move_person(new_location)
-    elsif crate?(new_location) && available?(new_location + index)
+    elsif new_location.has_crate? && new_crate_location.available?
       move_person(new_location)
       move_crate(index)
     end
   end
 
   def level_completed?
-    !cells.include?("o")
+    cells.none?(&:crate?)
   end
 
   private
 
   attr_reader :cells
-
-  def available?(cell)
-    cells[cell] == OPEN || cells[cell] == STORAGE
-  end
-
-  def crate?(cell)
-    cells[cell] == CRATE || cells[cell] == CRATE_ON_STORAGE
-  end
-
-  def storage?(cell)
-    cells[cell] == STORAGE || cells[cell] == CRATE_ON_STORAGE
-  end
 
   def move_person(new_location)
     update_current_location
@@ -63,27 +49,28 @@ class Board
   end
 
   def move_crate(index)
-    cell = person.location + index
-    if cells[cell] == OPEN
-      cells[cell] = CRATE
+    cell = cell_at(person.location + index)
+    if cell.open?
+      cell.update_occupant(:crate)
     else
-      cells[cell] = CRATE_ON_STORAGE
+      cell.update_occupant(:crate_on_storage)
     end
   end
 
   def update_current_location
-    if cells[person.location] == PERSON_ON_STORAGE
-      cells[person.location] = STORAGE
+    cell = cell_at(person.location)
+    if cell.person_on_storage?
+      cell.update_occupant(:storage)
     else
-      cells[person.location] = OPEN
+      cell.update_occupant(:open)
     end
   end
 
   def move_to_new_location(new_location)
-    if storage?(new_location)
-      cells[new_location] = PERSON_ON_STORAGE
+    if new_location.storage? || new_location.crate_on_storage?
+      new_location.update_occupant(:person_on_storage)
     else
-      cells[new_location] = PERSON
+      new_location.update_occupant(:person)
     end
   end
 end

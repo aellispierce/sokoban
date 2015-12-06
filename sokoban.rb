@@ -1,5 +1,6 @@
-require_relative "board.rb"
-require_relative "person.rb"
+require_relative "board"
+require_relative "person"
+require_relative "cell"
 
 class Game
   attr_reader :board

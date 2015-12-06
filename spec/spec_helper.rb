@@ -1,5 +1,6 @@
 require_relative "../board"
 require_relative "../person"
+require_relative "../cell"
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
