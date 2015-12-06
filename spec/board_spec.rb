@@ -35,4 +35,32 @@ describe Board do
       EOS
     end
   end
+
+  describe "#level_completed" do
+    it "responds true if level has no crates" do
+      board = <<-EOS
+      ###
+      #@#
+      ###
+      EOS
+      stub_level(board)
+      board = Board.new(level: 1)
+      expect(board.level_completed?).to eq(true)
+    end
+
+    it "responds false if level has crates" do
+      board = <<-EOS
+      ###
+      #o#
+      ###
+      EOS
+      stub_level(board)
+      board = Board.new(level: 1)
+      expect(board.level_completed?).to eq(false)
+    end
+  end
+
+  def stub_level(board)
+    allow(File).to receive(:readlines).and_return(StringIO.new(board))
+  end
 end
