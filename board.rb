@@ -24,16 +24,27 @@ class Board
   end
 
   def to_s
-    @cells.join
+    cells.join
   end
 
-  def update(new_location)
+  def update(index)
     person = find_person
-    @cells[person] = OPEN
-    @cells[person + new_location] = PERSON
+    new_location = person + index
+    if available?(new_location)
+      cells[person] = OPEN
+      cells[new_location] = PERSON
+    end
   end
 
   def find_person
-    @cells.index(PERSON)
+    cells.index(PERSON)
+  end
+
+  private
+
+  attr_reader :cells
+
+  def available?(cell)
+    cells[cell] == OPEN
   end
 end

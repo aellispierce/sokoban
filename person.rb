@@ -1,6 +1,6 @@
 class Person
   attr_accessor :board
-  DIRECTIONS = { "k" => 20, "j" => -20, "h" => -1, "l" => 1 }
+  DIRECTIONS = { "k" => -20, "j" => 20, "h" => -1, "l" => 1 }
 
   def initialize(board)
     @board = board
