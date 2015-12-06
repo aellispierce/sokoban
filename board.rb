@@ -20,11 +20,11 @@ class Board
     levels = lines.map { |line| line.chomp.ljust(19) }.join("\n")
     levels = levels.split(/\n {19}\n/)
 
-    @cells = levels[level - 1].chars
+    @cells = levels[level - 1]
   end
 
   def to_s
-    cells.join
+    cells
   end
 
   def update(index)
@@ -40,6 +40,10 @@ class Board
 
   def find_person
     cells.index(PERSON) || cells.index(PERSON_ON_STORAGE)
+  end
+
+  def level_completed?
+    !cells.include?("o")
   end
 
   private

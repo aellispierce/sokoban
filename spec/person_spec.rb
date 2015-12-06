@@ -208,6 +208,7 @@ describe Person do
 
       expect("#{board}".split.join(" ")).to eq(final_board.split.join(" "))
     end
+
     it "can push crate from storage to open space" do
       initial_board = <<-EOS
       #####
