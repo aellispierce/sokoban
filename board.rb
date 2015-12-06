@@ -6,7 +6,7 @@ class Board
   WALL    = "#"
   OPEN    = " "
   STORAGE = "."
-  MAN_ON_STORAGE    = "+"
+  PERSON_ON_STORAGE = "+"
   CRATE_ON_STORAGE  = "*"
 
   def initialize(level:)
@@ -31,13 +31,15 @@ class Board
     person = find_person
     new_location = person + index
     if available?(new_location)
-      cells[person] = OPEN
-      cells[new_location] = PERSON
+      move_person(person, index)
+    elsif has_crate?(new_location) && available?(new_location + index)
+      move_person(person, index)
+      move_crate(index)
     end
   end
 
   def find_person
-    cells.index(PERSON)
+    cells.index(PERSON) || cells.index(PERSON_ON_STORAGE)
   end
 
   private
@@ -45,6 +47,39 @@ class Board
   attr_reader :cells
 
   def available?(cell)
-    cells[cell] == OPEN
+    cells[cell] == OPEN || cells[cell] == STORAGE
+  end
+
+  def has_crate?(cell)
+    cells[cell] == CRATE || cells[cell] == CRATE_ON_STORAGE
+  end
+
+  def move_person(person, index)
+    update_previous_location(person)
+    move_to_new_location(person, index)
+  end
+
+  def move_crate(index)
+    if cells[find_person + index] == OPEN
+      cells[find_person + index] = CRATE
+    else
+      cells[find_person + index] = CRATE_ON_STORAGE
+    end
+  end
+
+  def update_previous_location(person)
+    if cells[person] == PERSON_ON_STORAGE
+      cells[person] = STORAGE
+    else
+      cells[person] = OPEN
+    end
+  end
+
+  def move_to_new_location(person, index)
+    if cells[person + index] == STORAGE || cells[person + index] == CRATE_ON_STORAGE
+      cells[person + index] = PERSON_ON_STORAGE
+    else
+      cells[person + index] = PERSON
+    end
   end
 end

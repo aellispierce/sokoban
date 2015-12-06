@@ -12,10 +12,11 @@ describe Person do
 
   describe "#move" do
     it "can move up using k" do
-      board = %q[
+      board = <<-EOS
       # #
       #@#
-      ###].strip
+      ###
+      EOS
       stub_level(board)
       board = Board.new(level: 1)
       person = board.person
@@ -27,10 +28,11 @@ describe Person do
     end
 
     it "can move down using j" do
-      board = %q[
+      board = <<-EOS
       ###
       #@#
-      # #].strip
+      # #
+      EOS
       stub_level(board)
       board = Board.new(level: 1)
       person = board.person
@@ -42,10 +44,11 @@ describe Person do
     end
 
     it "can move left using h" do
-      board = %q[
+      board = <<-EOS
       ###
        @#
-      ###].strip
+      ###
+      EOS
       stub_level(board)
       board = Board.new(level: 1)
       person = board.person
@@ -57,10 +60,11 @@ describe Person do
     end
 
     it "can move right using l" do
-      board = %q[
+      board = <<-EOS
       #####
       #@ ##
-      #####].strip
+      #####
+      EOS
       stub_level(board)
       board = Board.new(level: 1)
       person = board.person
@@ -72,10 +76,11 @@ describe Person do
     end
 
     it "cant move through walls" do
-      board = %q[
+      board = <<-EOS
       ###
       #@#
-      ###].strip
+      ###
+      EOS
       stub_level(board)
       board = Board.new(level: 1)
       person = board.person
@@ -84,6 +89,142 @@ describe Person do
       ending_location = person.location
 
       expect(ending_location).to eq(starting_location)
+    end
+
+    it "can move crate" do
+      initial_board = <<-EOS
+      # #
+      #o#
+      #@#
+      EOS
+      stub_level(initial_board)
+      board = Board.new(level: 1)
+      person = board.person
+      person.move("k")
+      final_board = <<-EOS
+      #o#
+      #@#
+      # #
+      EOS
+
+      expect("#{board}".split.join(" ")).to eq(final_board.split.join(" "))
+    end
+
+    it "can't move crate through wall" do
+      initial_board = <<-EOS
+      ###
+      #o#
+      #@#
+      EOS
+      stub_level(initial_board)
+      board = Board.new(level: 1)
+      person = board.person
+      person.move("k")
+      final_board = <<-EOS
+      ###
+      #o#
+      #@#
+      EOS
+
+      expect("#{board}".split.join(" ")).to eq(final_board.split.join(" "))
+    end
+
+    it "can't move two crates at once" do
+      initial_board = <<-EOS
+      # #
+      #o#
+      #o#
+      #@#
+      EOS
+      stub_level(initial_board)
+      board = Board.new(level: 1)
+      person = board.person
+      person.move("k")
+      final_board = <<-EOS
+      # #
+      #o#
+      #o#
+      #@#
+      EOS
+
+      expect("#{board}".split.join(" ")).to eq(final_board.split.join(" "))
+    end
+
+    it "can move crate into storage" do
+      initial_board = <<-EOS
+      #.#
+      #o#
+      #@#
+      EOS
+      stub_level(initial_board)
+      board = Board.new(level: 1)
+      person = board.person
+      person.move("k")
+      final_board = <<-EOS
+      #*#
+      #@#
+      # #
+      EOS
+
+      expect("#{board}".split.join(" ")).to eq(final_board.split.join(" "))
+    end
+
+    it "can move from storage to open space" do
+      initial_board = <<-EOS
+      # #
+      #+#
+      EOS
+      stub_level(initial_board)
+      board = Board.new(level: 1)
+      person = board.person
+      person.move("k")
+      final_board = <<-EOS
+      #@#
+      #.#
+      EOS
+
+      expect("#{board}".split.join(" ")).to eq(final_board.split.join(" "))
+    end
+
+    it "can push crate from storage to storage" do
+      initial_board = <<-EOS
+      #####
+      #  @#
+      #  *#
+      #  .#
+      #####
+      EOS
+      stub_level(initial_board)
+      board = Board.new(level: 1)
+      person = board.person
+      person.move("j")
+      final_board = <<-EOS
+      #####
+      #   #
+      #  +#
+      #  *#
+      #####
+      EOS
+
+      expect("#{board}".split.join(" ")).to eq(final_board.split.join(" "))
+    end
+    it "can push crate from storage to open space" do
+      initial_board = <<-EOS
+      #####
+      # *@#
+      #####
+      EOS
+      stub_level(initial_board)
+      board = Board.new(level: 1)
+      person = board.person
+      person.move("h")
+      final_board = <<-EOS
+      #####
+      #o+ #
+      #####
+      EOS
+
+      expect("#{board}".split.join(" ")).to eq(final_board.split.join(" "))
     end
   end
 
